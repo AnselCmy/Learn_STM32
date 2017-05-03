@@ -1,0 +1,5 @@
+"src/7Seg.o"
+"src/gpio.o"
+"src/main.o"
+"startup/startup_stm32.o"
+"startup/sysmem.o"
