@@ -1,5 +1,6 @@
+#include <7seg.h>
+#include <gpio.h>
 #include "stm32l476xx.h"
-#include "7Seg.h"
 
 int init_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLK)
 {
@@ -81,7 +82,7 @@ void set_Shutdown(uint8_t s)
 /*
  * The param presents the address should be encoded, 0x00 all not encode, 0xff all encode
  */
-void set_Encode(uint8_t d)
+void set_Decode(uint8_t d)
 {
 	send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, SEG_ADDRESS_DECODE_MODE, d);
 }
@@ -91,10 +92,105 @@ void set_Encode(uint8_t d)
  */
 void set_ScanLimit(uint8_t s)
 {
-	send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, SEG_ADDRESS_SCAN_LIMIT, 0x00);
+	send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, SEG_ADDRESS_SCAN_LIMIT, s);
 }
 
 uint8_t dot_Point(uint8_t n)
 {
 	return  (0x80 + n);
+}
+
+void clear_all()
+{
+	for(int i=1; i<=8; i++)
+	{
+		send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, i, 0);
+	}
+}
+
+void display_one(int loc, int num, int decode_flag)
+{
+	int address = 0;
+	switch(loc)
+	{
+		case 0:
+			address = SEG_ADDRESS_DIGIT_0; break;
+		case 1:
+			address = SEG_ADDRESS_DIGIT_1; break;
+		case 2:
+			address = SEG_ADDRESS_DIGIT_2; break;
+		case 3:
+			address = SEG_ADDRESS_DIGIT_3; break;
+		case 4:
+			address = SEG_ADDRESS_DIGIT_4; break;
+		case 5:
+			address = SEG_ADDRESS_DIGIT_5; break;
+		case 6:
+			address = SEG_ADDRESS_DIGIT_6; break;
+		case 7:
+			address = SEG_ADDRESS_DIGIT_7; break;
+		default:
+			address = SEG_ADDRESS_DIGIT_0; break;
+	}
+
+	int data = num;
+	if(decode_flag == NotDecode)
+	{
+		switch(num)
+		{
+			case 0:
+				data = SEG_DATA_NON_DECODE_0; break;
+			case 1:
+				data = SEG_DATA_NON_DECODE_1; break;
+			case 2:
+				data = SEG_DATA_NON_DECODE_2; break;
+			case 3:
+				data = SEG_DATA_NON_DECODE_3; break;
+			case 4:
+				data = SEG_DATA_NON_DECODE_4; break;
+			case 5:
+				data = SEG_DATA_NON_DECODE_5; break;
+			case 6:
+				data = SEG_DATA_NON_DECODE_6; break;
+			case 7:
+				data = SEG_DATA_NON_DECODE_7; break;
+			case 8:
+				data = SEG_DATA_NON_DECODE_8; break;
+			case 9:
+				data = SEG_DATA_NON_DECODE_9; break;
+		}
+	}
+	send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, address, data);
+}
+
+void display_from_right(int number)
+{
+	clear_all();
+	int neg = 0;
+	if(number < 0)
+	{
+		number = -number; // Dealing the positive first
+		neg = 1;
+	}
+	int cnt = 0;
+	int num_arr[8];
+	int remain = number % 10;
+	int num = number / 10;
+	int len = 0;
+	num_arr[cnt] = remain;
+	while(num)
+	{
+		cnt++;
+		remain = num % 10;
+		num = num / 10;
+		num_arr[cnt] = remain;
+	}
+	len = cnt+1;
+	// Display
+	for(int i=0; i<=cnt; i++)
+	{
+		display_one(i, num_arr[i], NotDecode);
+	}
+	if(neg)
+		send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, len+1, SEG_DATA_NON_DECODE_DASH);
 }

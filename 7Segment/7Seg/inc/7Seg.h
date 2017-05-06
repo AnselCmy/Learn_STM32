@@ -54,6 +54,10 @@
 #define SEG_DATA_DECODE_P		14
 #define SEG_DATA_DECODE_BLANK	15
 
+// Define the flag for encode
+#define Decode 1
+#define NotDecode 0
+
 // Define gpio port and pin
 #define SEG_gpio	GPIOB
 #define CLK_pin			3
@@ -68,8 +72,16 @@ void set_Intensity(uint8_t i);
 
 void set_Shutdown(uint8_t s);
 
-void set_Encode(uint8_t d);
+void set_Decode(uint8_t d);
 
 void set_ScanLimit(uint8_t s);
 
 uint8_t dot_Point(uint8_t n);
+
+void clear_all();
+
+void display_one(int loc, int num, int decode_flag);
+
+void display_from_right(int number);
+
+void display_two_decimal(double number);
