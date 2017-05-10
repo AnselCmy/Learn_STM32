@@ -108,6 +108,35 @@ void clear_all()
 	}
 }
 
+int get_Non_Decode(int num)
+{
+	int data = 0;
+	switch(num)
+	{
+		case 0:
+			data = SEG_DATA_NON_DECODE_0; break;
+		case 1:
+			data = SEG_DATA_NON_DECODE_1; break;
+		case 2:
+			data = SEG_DATA_NON_DECODE_2; break;
+		case 3:
+			data = SEG_DATA_NON_DECODE_3; break;
+		case 4:
+			data = SEG_DATA_NON_DECODE_4; break;
+		case 5:
+			data = SEG_DATA_NON_DECODE_5; break;
+		case 6:
+			data = SEG_DATA_NON_DECODE_6; break;
+		case 7:
+			data = SEG_DATA_NON_DECODE_7; break;
+		case 8:
+			data = SEG_DATA_NON_DECODE_8; break;
+		case 9:
+			data = SEG_DATA_NON_DECODE_9; break;
+	}
+	return data;
+}
+
 void display_one(int loc, int num, int decode_flag)
 {
 	int address = 0;
@@ -193,4 +222,28 @@ void display_from_right(int number)
 	}
 	if(neg)
 		send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, len+1, SEG_DATA_NON_DECODE_DASH);
+}
+
+void display_two_decimal(double num)
+{
+	int dec_1 = (int)(num*10)%10;
+	int dec_2 = (int)(num*100)%10;
+	display_one(0, dec_2, NotDecode);
+	display_one(1, dec_1, NotDecode);
+	int number = num;
+	send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, 3, dot_Point(get_Non_Decode(number%10)));
+	number = number/10;
+	for(int i=3; i<8; i++)
+	{
+		if(number > 0)
+		{
+			display_one(i, number%10, NotDecode);
+			number /= 10;
+		}
+		else
+		{
+			send_7seg(SEG_gpio, DIN_pin, CS_pin, CLK_pin, i+1, SEG_DATA_NON_DECODE_BLANK);
+		}
+	}
+	return;
 }

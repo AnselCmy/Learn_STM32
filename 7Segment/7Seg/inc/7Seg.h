@@ -1,5 +1,12 @@
 #include "stm32l476xx.h"
 
+// Define gpio port and pin
+// PB 3 4 8
+#define SEG_gpio	GPIOB
+#define CLK_pin			3
+#define DIN_pin			4
+#define CS_pin			8
+
 // Define a lot of Non-Decode Mode Constants
 #define SEG_DATA_NON_DECODE_0		0b1111110
 #define SEG_DATA_NON_DECODE_1		0b0110000
@@ -58,12 +65,6 @@
 #define Decode 1
 #define NotDecode 0
 
-// Define gpio port and pin
-#define SEG_gpio	GPIOB
-#define CLK_pin			3
-#define DIN_pin			4
-#define CS_pin			8
-
 int init_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLk);
 
 void send_7seg(GPIO_TypeDef* gpio, int DIN, int CS, int CLk, int address, int data);
@@ -78,10 +79,12 @@ void set_ScanLimit(uint8_t s);
 
 uint8_t dot_Point(uint8_t n);
 
+int get_Non_Decode(int num);
+
 void clear_all();
 
 void display_one(int loc, int num, int decode_flag);
 
 void display_from_right(int number);
 
-void display_two_decimal(double number);
+void display_two_decimal(double num);
