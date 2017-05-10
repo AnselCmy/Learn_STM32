@@ -1,0 +1,7 @@
+"src/7seg.o"
+"src/gpio.o"
+"src/keypad.o"
+"src/main.o"
+"src/timer_counter.o"
+"startup/startup_stm32.o"
+"startup/sysmem.o"
